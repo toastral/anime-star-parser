@@ -21,13 +21,19 @@ class Curl{
             CURLOPT_CONNECTTIMEOUT => 20,
             CURLOPT_TIMEOUT => 30,
         ];
+        if(defined('PROXY'))
+        {
+            $data[CURLOPT_PROXY]=PROXY;
+            $data[CURLOPT_FOLLOWLOCATION]=1;
+        }
+        if(defined('PROXYAUTH')) $data[CURLOPT_PROXYUSERPWD]=PROXYAUTH;
         return $data;
     }
 
-    public function get($url, $ref, $more_curl_init_data=[])
+    public function get($url, $ref='', $more_curl_init_data=[])
     {
-echo "\n get=$url\n";
-        if(defined('TIME_OUT')) { echo "TIMEOUT start\n"; sleep(TIME_OUT);  echo "TIMEOUT stop\n"; }
+echo "get = $url\n";
+        if(defined('TIME_OUT')) { sleep(TIME_OUT); }
         $curl = curl_init();
         $data = $this->getBaseCurlData($url, $ref);
         $data += $more_curl_init_data;
@@ -42,8 +48,8 @@ echo "\n get=$url\n";
 
     public function post($url, $ref, $post_data=[], $more_curl_init_data=[])
     {
-echo "\n post=$url\n";
-        if(defined('TIME_OUT')) { echo "TIMEOUT start\n"; sleep(TIME_OUT);  echo "TIMEOUT stop\n"; }
+echo "post = $url\n";
+        if(defined('TIME_OUT')) { sleep(TIME_OUT); }
         $curl = curl_init();
         $data = $this->getBaseCurlData($url, $ref);
         $data += $more_curl_init_data;

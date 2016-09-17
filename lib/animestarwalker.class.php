@@ -13,6 +13,8 @@ class AnimeStarWalker extends Curl{
     public $url_login_action;
 
     public $a_product_urls = [];
+    public $a_product_obj = [];
+
     public function __construct($AnimeUser)
     {
         parent::__construct();
@@ -35,7 +37,7 @@ class AnimeStarWalker extends Curl{
 
     // рекурсия
     function _parseProductsUrlByCatUrl($cat_url){
-echo "$cat_url\n";
+echo "parse category: $cat_url\n";
         $cat_html = $this->get($cat_url, $cat_url);
         $is_valid_cat_html = $this->loginWatchDog($cat_html);
         if(!$is_valid_cat_html) $cat_html = $this->get($cat_url, $cat_url);
@@ -51,7 +53,7 @@ echo "$cat_url\n";
     // возвращаем true - если не было повторной авторизации, false - в противном случае
     function loginWatchDog($html){
         if(!$this->weAreIn($html)){
-echo "try to connect...\n";
+echo "try to login...\n";
             $this->logIn(
                 $this->get($this->url_login_form, $this->url_login_form, [CURLOPT_FOLLOWLOCATION => true])
             );
@@ -73,8 +75,17 @@ echo "try to connect...\n";
         return '';
     }
 
-    function parseProduct($product_html){
+    function parseProducts(){
+        $this->a_product_obj=[];
+        foreach($this->a_product_urls as $product_url){
 
+            $product_html = $this->get($product_url, $product_url);
+            $is_valid_cat_html = $this->loginWatchDog($product_html);
+            if(!$is_valid_cat_html) $product_html = $this->get($product_url, $product_url);
+            $Product = new Donor\Product();
+            $Product->parseHtml($product_html);
+            $this->a_product_obj[] = $Product;
+        }
     }
 
 

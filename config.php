@@ -7,6 +7,9 @@
  */
 define('COOKIE_PATH', __DIR__);
 
+define('PROXY', '45.79.183.31:3128');
+define('PROXYAUTH', 'user:password');
+
 define('TIME_OUT', 1); // тайм аут перед очередным запросом get или post - в секундах
 
 // данные для входа на anime-star
