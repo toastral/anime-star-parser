@@ -21,7 +21,27 @@ class Product{
     public $our_cate_id=0;
     public $alias_for_graceful_url='';
 
-    public function parseHtml($product_html){
+    public function parseShortHtml($front_block_html){
+        if(preg_match('|class="musheji_img"[^"]+"([^"]+)"|', $front_block_html, $patt))
+            $this->url = $patt[1];
+
+        if(preg_match('|-([\d]+)\.htm|', $this->url, $patt))
+            $this->id = $patt[1];
+
+        if(preg_match('|class="musheji_name"[^"]+"([^"]+)"|', $front_block_html, $patt))
+            $this->name = $patt[1];
+
+        if(preg_match('|>Model: ([^<]+)<|', $front_block_html, $patt))
+            $this->model = $patt[1];
+
+        if(preg_match('|class="musheji_price">\$([^<]+)<|', $front_block_html, $patt))
+            $this->price = $patt[1];
+
+        $this->makeGracefulAlias();
+    }
+
+
+    public function parseFullHtml($product_html){
         if(preg_match('/hidden" name="products_id" value="([\d]+)"/', $product_html, $patt))
             $this->id = $patt[1];
         if(preg_match('/link rel="canonical" href="([^"]+)"/', $product_html, $patt))
@@ -48,10 +68,14 @@ class Product{
         if(preg_match('/<a id="jqzoom" href="([^"]+)"/U', $product_html, $patt))
             $this->img_url = 'http://www.anime-star.com/'.$patt[1];
 
+        $this->makeGracefulAlias();
 
+    }
+
+    public function makeGracefulAlias(){
         if(strlen($this->name)>0){
             $tmp = strtolower($this->name);
-            $this->alias_for_graceful_url = preg_replace('/[^a-z\s]+/', ' ', $tmp);
+            $tmp = preg_replace('/[^a-z\s]+/', ' ', $tmp);
             $tmp = trim($tmp);
             $tmp = preg_replace('/[\s]+/', '-', $tmp);
             $this->alias_for_graceful_url = $this->id.'-'.$tmp;
